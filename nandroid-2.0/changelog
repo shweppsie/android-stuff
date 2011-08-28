@@ -1,0 +1,29 @@
+nandroidbackup 2.0 - 20081209
+
+  * Switched to using dump_image for dumping boot
+    and recovery partitions for ECC checking support.
+    dump_image is a modification of flash_image that
+    reads NAND and writes to file. 
+    Coded by brainaid.
+
+  * Due to inability to read 16 byte extradata
+    for yaffs2 partitions I'm switching to a
+    tar+mkyaffs2 based method.  NAND imaging method will 
+    be pursued after attaining more info and better tools.
+
+  * Tar executed on phone via busybox and piped via busybox nc
+    to a forwarded port. Using netcat on host side to dump data 
+    to local tar file. 
+
+  * Took mkyaffs2image code from android tree to ensure 
+    that the correct method is used to generate images from
+    extracted tar. Due to file and user permissions, this 
+    requires root; when the user is not root, example 
+    commandlines are printed.
+    
+
+nandroidbackup 1.0 - 20081209
+
+  * Initial version using dd to dump partitions
+
+

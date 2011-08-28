@@ -1,0 +1,34 @@
+* What is Nandroid Backup v2.0?
+Nandroid Backup is a set of tools and a script that will enable anyone who has root on their G1 and has the engineering/dev spl bootloader [1] (or has a dev phone) + a recovery image with busybox and adbd running as root [2] to make full system backups. These can then be restored using the fastboot [3] commandline tool and your phone in SPL/bootloader mode (hold camera + power). This allows you to create regular backups of your entire phones NAND flash so that you can restore a backup when something breaks. Its backup method works on a level that allows you to completely break, wipe or corrupt any or all partitions and still restore the phone to a working state within a few minutes. This works great for those who use their G1 for normal activities but also want to test their ideas which might break the phone, or when not having an extra G1 to keep purely as a development phone.
+
+* Requirements for use
+- Android G1 phone in recovery mode with busybox installed, including appropriate symlinks to at least tar and md5sum, as well as 'adb shell' support running as root. I recommend using JesusFreke US RC30 or UK RC8 v1.2 recovery image [2]. You can flash the RC30 v1.2 recovery.img on your G1 if you don't want to bother constructing your own image. Of course you are free to use your own recovery image and it will work if you set it up correctly.
+- dump_image-arm and mkyaffs2image|mkyaffs2image-$ARCH compiled in the current dir, as well as root on a linux/mac (POSIX) machine for constructing system and data images. root is required because the uid, gid and file permissions need to be preserved while extracting and creating the yaffs2 images.  You are free to run the script as a normal user and then run the appropriate commands yourself as root; the commands are printed when you run the script as a regular user.
+
+If you don't trust the provided binaries, you are free to compile them yourself. The source for the tools are included. For dump_image, edit nandtools/android-imagetools/Makefile so that you use the proper cross compiling gcc. For mkyaffs2img, just running make in tartools/yaffs2/utils/ should give you a binary. You are on your own in getting stuff compiled, but it should be easy to figure out from the Makefile.
+
+* How to use this (the easy part)
+Just boot your phone in recovery mode with the correct recovery.img (one that has adb shell as root + busybox installed with symlinks to tar, md5sum etc) and connect it to your pc/laptop/server. Then run the nandroid.sh script. If something is wrong or missing, it will tell you. 
+
+* What about restore?
+If you have the dev phone or have root on the G1 and flashed the engineering/dev bootloader, then you can power on your phone while holding camera to get into the bootloader/SPL. It should then show some androids on skateboards (if not, you don't have the engineering/dev bootloader). Plug in your USB cable and push back until it says FASTBOOT instead of Serial0. Now you can fire up fastboot flash {partition} {file.img}.
+Fastboot itself is part of the android SDK. If you download and compile your own mydroid build, it should sit in mydroid/out/host/linux-x86/bin/fastboot Perhaps in a future version I'll include a restore script, but for now I don't see the need.
+One tip, if you are in fastboot mode on your phone and 'fastboot devices' doesn't show anything, try as root. You might need to edit your udev setup to allow your user to access the phone's usb device (which is different from the one you're in when in recovery or normal boot).
+
+* Where's the source?
+Sources are included. They are copies of the Android sources with various changes mostly made by Brainaid. 
+Everything in the zip is also also available through subversion:
+
+svn co http://svn.infernix.net/nandroid/
+
+Note that I DO NOT recommend checking out the latest revision unless you know damn well what you are doing. No guarantees if you play with fire. At the very least do diff against the latest released version.
+
+* Credits
+Bash script hacked together by infernix.
+dump_image adapted from flash_image and extended by Brainaid.
+Original mtdutils source and mkyaffs2image source by Google.
+
+[1] http://www.gotontheinter.net/bootloader
+[2] http://forum.xda-developers.com/showthread.php?t=443713
+[3] http://www.gotontheinter.net/fastboot
+
