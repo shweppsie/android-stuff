@@ -1,0 +1,22 @@
+#!/system/bin/sh
+
+bb="busybox"
+sdmntpnt="/dev/block/mmcblk0"
+makefs="/system/bin/mke2fs"
+checkfs="/system/bin/e2fsck"
+
+$bb mount -o rw,remount auto /
+$bb rm -r /data/dalvik-cache/*
+$bb mkdir /ramdir;
+$bb mount -t tmpfs tmpfs /ramdir ;
+for i in data ramdir; do
+	if [ ! -d $i/dalvik-cache ];
+	then
+   		$bb mkdir /$i/dalvik-cache ;
+		$bb chmod 0775 /$i/dalvik-cache ;
+	    	$bb chown 1000:1000 /$i/dalvik-cache ;
+	fi
+done
+$bb mount -o bind /ramdir/dalvik-cache /data/dalvik-cache;
+$bb mount -o ro,remount auto /
+
