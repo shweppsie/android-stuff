@@ -6,7 +6,6 @@ makefs="/system/bin/mke2fs"
 checkfs="/system/bin/e2fsck"
 
 $bb mount -o rw,remount auto /
-$bb rm -r /data/dalvik-cache/*
 $bb mkdir /ramdir;
 $bb mount -t tmpfs tmpfs /ramdir ;
 for i in data ramdir; do
@@ -17,6 +16,7 @@ for i in data ramdir; do
 	    	$bb chown 1000:1000 /$i/dalvik-cache ;
 	fi
 done
+$bb rm -r /data/dalvik-cache/*
 $bb mount -o bind /ramdir/dalvik-cache /data/dalvik-cache;
 $bb mount -o ro,remount auto /
 
